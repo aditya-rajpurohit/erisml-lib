@@ -4,6 +4,17 @@ ErisML is a modeling layer for governed, foundation-model-enabled agents
 operating in pervasive computing environments (homes, hospitals, campuses,
 factories, vehicles, etc.).
 
+ErisML provides a single, machine-interpretable and human-legible representation of 
+**(i) environment state and dynamics
+**(ii) agents and their capabilities and beliefs
+**(iii) intents and utilities
+**(iv) norms (permissions, obligations, prohibitions, sanctions)
+**(v) multi-agent strategic interaction
+
+We define a concrete syntax, a formal grammar, denotational semantics, and
+an execution model that treats norms as first-class constraints on action, 
+introduces longitudinal safety metrics such as Norm Violation Rate (NVR) and
+Alignment Drift Velocity (ADV), and supports compilation to planners, verifiers, and simulators.
 
 ![CI](https://github.com/ahb-sjsu/erisml-lib/actions/workflows/ci.yaml/badge.svg)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)
