@@ -266,11 +266,15 @@ def main() -> None:
     for opt_id, judgements in judgements_by_option.items():
         print(f"--- Option: {opt_id} ---")
         for j in judgements:
-            print(f"[EM={j.em_name:<24}] verdict={j.verdict:<14} score={j.normative_score:.3f}")
+            print(
+                f"[EM={j.em_name:<24}] verdict={j.verdict:<14} score={j.normative_score:.3f}"
+            )
             for r in j.reasons:
                 print(f"    - {r}")
         agg = outcome.aggregated_judgements[opt_id]
-        print(f"[AGG governance] verdict={agg.verdict:<14} score={agg.normative_score:.3f}")
+        print(
+            f"[AGG governance] verdict={agg.verdict:<14} score={agg.normative_score:.3f}"
+        )
         for r in agg.reasons:
             print(f"    * {r}")
         print()

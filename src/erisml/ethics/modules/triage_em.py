@@ -17,7 +17,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Tuple
 
 from ..facts import EthicalFacts
-from ..judgement import EthicalJudgement, Verdict
+from ..judgement import Verdict
 from .base import BaseEthicsModule
 
 
@@ -63,7 +63,7 @@ class CaseStudy1TriageEM(BaseEthicsModule):
     w_procedural: float = 0.05
 
     # Penalties and uncertainty handling.
-    fairness_penalty: float = 0.0   # set to e.g. 0.4 to strongly penalize unfair options
+    fairness_penalty: float = 0.0  # set to e.g. 0.4 to strongly penalize unfair options
     exploitation_penalty: float = 0.4
     discrimination_penalty: float = 0.5
     power_imbalance_penalty: float = 0.3
@@ -226,9 +226,7 @@ class CaseStudy1TriageEM(BaseEthicsModule):
             fairness_flags.append("exacerbates_power_imbalance=True")
 
         if penalty > 0:
-            reasons.append(
-                "Fairness concern(s) detected: " + ", ".join(fairness_flags)
-            )
+            reasons.append("Fairness concern(s) detected: " + ", ".join(fairness_flags))
 
         fairness_penalty_applied = _clamp(penalty, 0.0, 0.9)
         score_after_fairness = base_score * (1.0 - fairness_penalty_applied)

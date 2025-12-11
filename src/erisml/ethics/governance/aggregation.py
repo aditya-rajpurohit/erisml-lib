@@ -184,9 +184,7 @@ def aggregate_judgements(
                 "Option is forbidden because at least one EM issued a 'forbid' verdict."
             )
     else:
-        reasons.append(
-            f"Weighted average normative_score = {aggregated_score:.3f}."
-        )
+        reasons.append(f"Weighted average normative_score = {aggregated_score:.3f}.")
 
     metadata: Dict[str, object] = {
         "forbidden": forbidden,
@@ -320,7 +318,10 @@ def select_option(
         top_score = eligible[0][1].normative_score
         # Check if baseline is among eligible with the same top score.
         for opt_id, agg in eligible:
-            if opt_id == baseline_option_id and abs(agg.normative_score - top_score) < 1e-9:
+            if (
+                opt_id == baseline_option_id
+                and abs(agg.normative_score - top_score) < 1e-9
+            ):
                 selected_option_id = baseline_option_id
                 break
 

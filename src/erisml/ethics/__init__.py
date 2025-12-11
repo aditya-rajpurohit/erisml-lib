@@ -74,14 +74,11 @@ __all__ = [
     "VirtueAndCare",
     "ProceduralAndLegitimacy",
     "EpistemicStatus",
-
     # Judgements & verdicts
     "Verdict",
     "EthicalJudgement",
-
     # Modules
     "EthicsModule",
-
     # Governance
     "GovernanceConfig",
     "DecisionOutcome",
