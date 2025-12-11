@@ -65,7 +65,7 @@ python -m venv .venv
 pip install -e ".[dev]"
 
 pytest
-
+```
 
 ## Writing Your Own Ethics Module (EM)
 
@@ -143,3 +143,4 @@ class SimpleSafetyEM(EthicsModule):
             reasons=reasons,
             metadata=metadata,
         )
+```
