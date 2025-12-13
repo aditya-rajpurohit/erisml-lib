@@ -33,32 +33,32 @@ Current pervasive AI systems exhibit four types of chaos:
 **Temporal chaos**: Distribution shifts are constant. Models trained on summer data face winter storms. Policies optimized for one resident must adapt when visitors arrive. Norms for routine operation must flex during emergencies.
 
 Current approaches fragment the problem:
-- **Prompts** encode goals but are brittle and unverifiable
-- **Rules** capture norms but live separately from models
-- **Code** provides orchestration but obscures intent
-- **Planning languages** (PDDL) specify goals but lack multi-agent reasoning and normative structures
+- **Prompts** encode goals but are brittle and unverifiable  
+- **Rules** capture norms but live separately from models  
+- **Code** provides orchestration but obscures intent  
+- **Planning languages** (PDDL) specify goals but lack multi-agent reasoning and normative structures  
 
 ### B. Vision: A Unified Substrate
 
 We propose **ErisML** (named for the Greek goddess of discord) as a unified modeling language providing a single substrate for:
 
-1. **Environment**: State spaces, dynamics, uncertainty, observability
-2. **Agency**: Capabilities, beliefs, memory, decision interfaces
-3. **Intent**: Multi-objective utilities, preferences, goal structures
-4. **Norms**: Permissions, obligations, prohibitions, sanctions
-5. **Dynamics**: Multi-agent interactions, strategic behavior, emergence
+1. **Environment**: State spaces, dynamics, uncertainty, observability  
+2. **Agency**: Capabilities, beliefs, memory, decision interfaces  
+3. **Intent**: Multi-objective utilities, preferences, goal structures  
+4. **Norms**: Permissions, obligations, prohibitions, sanctions  
+5. **Dynamics**: Multi-agent interactions, strategic behavior, emergence  
 
 Why unification? Because these elements are inseparable in pervasive computing. Agent actions depend on environment state. Environment dynamics change based on multi-agent interactions. Norms constrain which intents can be pursued. Chaos emerges from their interaction.
 
 ### C. Contributions
 
 This paper offers:
-- **Design space analysis** exploring fundamental trade-offs
-- **Research challenges** that must be addressed
-- **Technical requirements** derived from pervasive computing realities
-- **Formal semantics** showing what ErisML could provide
-- **Case study** demonstrating capabilities and limitations
-- **Research roadmap** for the community
+- **Design space analysis** exploring fundamental trade-offs  
+- **Research challenges** that must be addressed  
+- **Technical requirements** derived from pervasive computing realities  
+- **Formal semantics** showing what ErisML could provide  
+- **Case study** demonstrating capabilities and limitations  
+- **Research roadmap** for the community  
 
 We invite critique and collaborative refinement. The goal is to catalyze conversation about common substrates for pervasive, AI-enabled systems.
 
@@ -105,172 +105,170 @@ We invite critique and collaborative refinement. The goal is to catalyze convers
 
 Rather than treating uncertainty, conflicts, and strategic behavior as exceptions, ErisML makes them first-class constructs:
 
-- **Observational**: Partial, noisy, conflicting sensor data
+- **Observational**: Partial, noisy, conflicting sensor data  
 - **Intentional**: Multi-objective, often conflicting goals  
-- **Normative**: Ambiguous, contextual, sometimes contradictory rules
-- **Interactive**: Strategic agents, emergent behaviors
-- **Temporal**: Distribution shift, non-stationarity, adaptation
+- **Normative**: Ambiguous, contextual, sometimes contradictory rules  
+- **Interactive**: Strategic agents, emergent behaviors  
+- **Temporal**: Distribution shift, non-stationarity, adaptation  
 
 ### B. Illustrative Syntax
 
 We present ErisML through a smart hospital room example:
 
-```erisml
-// ENVIRONMENT: Physical and informational state
-environment HospitalRoom {
-  objects: Patient, Nurse, CareAgent, Monitor, IVPump;
-  
-  state:
-    patient.vitals: {hr: real, bp: real, spo2: real};
-    patient.location: {in_bed, bathroom, fallen};
-    nurse.location: {in_room, at_station, offsite};
-    // Uncertainty annotation
-    patient.pain_level: real @ uncertain(self_report);
-    emergency_status: {routine, urgent, critical};
-  
-  dynamics:
-    // Stochastic state transitions
-    update_vitals(v: Vitals) ~> patient.vitals = v @ prob 0.95;
-    fall_detected() ~> {
-      patient.location = fallen;
-      emergency_status = critical;
-      trigger_event("fall_detected");
-    };
-}
-
-// AGENTS: Capabilities, beliefs, constraints
-agent CareAgent {
-  capabilities: {
-    monitor_vitals, adjust_iv_rate, summon_nurse, 
-    provide_comfort, call_emergency
-  };
-  
-  // Explicit partial observability
-  beliefs: {
-    fully_observed: [patient.vitals, monitor.last_sync];
-    estimated: [patient.pain_level, patient.location];
-    hidden: [nurse.current_workload];
-  };
-  
-  // Multi-objective with explicit priorities
-  intents: vector_objective {
-    maximize: patient.comfort,
-    minimize: response_time,
-    maintain: patient.safety >= threshold(critical),
-    respect: nurse.workload <= threshold(sustainable)
-  };
-  
-  constraints: {
-    no_direct_medication_changes,  // Only nurses
-    require_explanation: any_action where impact > medium
-  };
-}
-
-// NORMS: Governance structure
-norms ClinicalProtocol {
-  jurisdiction: HospitalRoom;
-  authority: Hospital.PolicyBoard + State.HealthDept;
-  
-  prohibition: {
-    CareAgent.adjust_iv_rate when emergency_status == critical;
-    any_agent.share(patient.data, external_party)
-      unless consent_given OR legal_mandate;
-  };
-  
-  obligation: {
-    CareAgent.summon_nurse 
-      when patient.vitals in danger_zone
-      within 30 seconds;
-    Nurse.respond_to_alert
-      when alert.priority >= urgent
-      within 5 minutes;
-  };
-  
-  // Conflict resolution
-  priority: {
-    patient.safety > efficiency > comfort;
-  };
-  
-  // Context-sensitive adaptation
-  context_sensitivity: {
-    during night_shift:
-      relax summon_nurse.within from 30s to 60s;
-    during emergency_status == critical:
-      override efficiency_objectives;
-      expand CareAgent.capabilities += emergency_protocols;
-  };
-  
-  // Sanctions for violations
-  sanction: {
-    if violated(prohibition.share_patient_data):
-      log_violation(severity=critical);
-      suspend_agent();
-      notify_compliance_officer();
-  };
-}
-
-// DYNAMICS: Multi-agent strategic interaction
-dynamics MultiAgentCare {
-  action_space: {
-    CareAgent: {monitor, adjust_iv, summon, message, none};
-    Nurse: {assess, medicate, respond, override, ignore};
-  };
-  
-  // Resource costs (reflects strategic trade-offs)
-  cost_model: {
-    CareAgent.summon: 5.0,      // High: interrupts nurse
-    Nurse.respond: 10.0,         // Very high: takes from other patients
-  };
-  
-  // Norm-gated action selection
-  feasible_actions(agent, state): {
-    actions = agent.capabilities;
-    return [a for a in actions if norms.permits(agent, a, state)];
-  };
-}
-```
+    // ENVIRONMENT: Physical and informational state
+    environment HospitalRoom {
+      objects: Patient, Nurse, CareAgent, Monitor, IVPump;
+      
+      state:
+        patient.vitals: {hr: real, bp: real, spo2: real};
+        patient.location: {in_bed, bathroom, fallen};
+        nurse.location: {in_room, at_station, offsite};
+        // Uncertainty annotation
+        patient.pain_level: real @ uncertain(self_report);
+        emergency_status: {routine, urgent, critical};
+      
+      dynamics:
+        // Stochastic state transitions
+        update_vitals(v: Vitals) ~> patient.vitals = v @ prob 0.95;
+        fall_detected() ~> {
+          patient.location = fallen;
+          emergency_status = critical;
+          trigger_event("fall_detected");
+        };
+    }
+    
+    // AGENTS: Capabilities, beliefs, constraints
+    agent CareAgent {
+      capabilities: {
+        monitor_vitals, adjust_iv_rate, summon_nurse, 
+        provide_comfort, call_emergency
+      };
+      
+      // Explicit partial observability
+      beliefs: {
+        fully_observed: [patient.vitals, monitor.last_sync];
+        estimated: [patient.pain_level, patient.location];
+        hidden: [nurse.current_workload];
+      };
+      
+      // Multi-objective with explicit priorities
+      intents: vector_objective {
+        maximize: patient.comfort,
+        minimize: response_time,
+        maintain: patient.safety >= threshold(critical),
+        respect: nurse.workload <= threshold(sustainable)
+      };
+      
+      constraints: {
+        no_direct_medication_changes,  // Only nurses
+        require_explanation: any_action where impact > medium
+      };
+    }
+    
+    // NORMS: Governance structure
+    norms ClinicalProtocol {
+      jurisdiction: HospitalRoom;
+      authority: Hospital.PolicyBoard + State.HealthDept;
+      
+      prohibition: {
+        CareAgent.adjust_iv_rate when emergency_status == critical;
+        any_agent.share(patient.data, external_party)
+          unless consent_given OR legal_mandate;
+      };
+      
+      obligation: {
+        CareAgent.summon_nurse 
+          when patient.vitals in danger_zone
+          within 30 seconds;
+        Nurse.respond_to_alert
+          when alert.priority >= urgent
+          within 5 minutes;
+      };
+      
+      // Conflict resolution
+      priority: {
+        patient.safety > efficiency > comfort;
+      };
+      
+      // Context-sensitive adaptation
+      context_sensitivity: {
+        during night_shift:
+          relax summon_nurse.within from 30s to 60s;
+        during emergency_status == critical:
+          override efficiency_objectives;
+          expand CareAgent.capabilities += emergency_protocols;
+      };
+      
+      // Sanctions for violations
+      sanction: {
+        if violated(prohibition.share_patient_data):
+          log_violation(severity=critical);
+          suspend_agent();
+          notify_compliance_officer();
+      };
+    }
+    
+    // DYNAMICS: Multi-agent strategic interaction
+    dynamics MultiAgentCare {
+      action_space: {
+        CareAgent: {monitor, adjust_iv, summon, message, none};
+        Nurse: {assess, medicate, respond, override, ignore};
+      };
+      
+      // Resource costs (reflects strategic trade-offs)
+      cost_model: {
+        CareAgent.summon: 5.0,      // High: interrupts nurse
+        Nurse.respond: 10.0,         // Very high: takes from other patients
+      };
+      
+      // Norm-gated action selection
+      feasible_actions(agent, state): {
+        actions = agent.capabilities;
+        return [a for a in actions if norms.permits(agent, a, state)];
+      };
+    }
 
 ### C. Formal Semantics
 
 ErisML specifications compile to a **Norm-Constrained Stochastic Game** (NCSG):
 
 **Definition**: A tuple ⟨N, S, {A_i}, {Ω_i}, T, {U_i}, Φ, C⟩ where:
-- N = set of agents
-- S = state space (finite, continuous, or hybrid)
-- A_i = action space for agent i
-- Ω_i = observation space for agent i (Ω_i ⊇ S for partial observability)
-- T: S × A₁ × ... × A_n → Δ(S) = stochastic transition kernel
-- U_i: S × A → ℝ^k = multi-objective utility for agent i
-- Φ = {φ_j} = set of normative constraints
-- C: Φ × S → priority_ordering = conflict resolution function
+- N = set of agents  
+- S = state space (finite, continuous, or hybrid)  
+- A_i = action space for agent i  
+- Ω_i = observation space for agent i (Ω_i ⊇ S for partial observability)  
+- T: S × A₁ × ... × A_n → Δ(S) = stochastic transition kernel  
+- U_i: S × A → ℝ^k = multi-objective utility for agent i  
+- Φ = {φ_j} = set of normative constraints  
+- C: Φ × S → priority_ordering = conflict resolution function  
 
 **Normative Constraints**: Each φ_j: S × A × Time → {permit, prohibit, oblige} with:
-- **Temporal scope**: Obligations have deadlines; permissions may have duration limits
-- **Context dependence**: Norms activated based on state predicates
-- **Jurisdictional scope**: Norms apply to subsets of agents/states
+- **Temporal scope**: Obligations have deadlines; permissions may have duration limits  
+- **Context dependence**: Norms activated based on state predicates  
+- **Jurisdictional scope**: Norms apply to subsets of agents/states  
 
 **Norm-Gated Policy**: Agent i's policy π_i: Δ(S) → Δ(A_i) must satisfy:
-```
-π_i(a | b) > 0 only if ∃s ∈ support(b): 
-  ∀φ ∈ Φ: φ(s, a, t) ∈ {permit, oblige} ∨ C(Φ, s) overrides φ
-```
+
+    π_i(a | b) > 0 only if ∃s ∈ support(b): 
+      ∀φ ∈ Φ: φ(s, a, t) ∈ {permit, oblige} ∨ C(Φ, s) overrides φ
 
 **Multi-Objective Optimization**: Vector utilities U_i ∈ ℝ^k handled via:
-- **Scalarization**: w · U_i for weights w ∈ Δ^{k-1}
-- **Lexicographic**: (U_i)_1 ≫ (U_i)_2 ≫ ... (strict priorities)
-- **Constrained**: max (U_i)_1 subject to (U_i)_j ≥ τ_j ∀j > 1
+- **Scalarization**: w · U_i for weights w ∈ Δ^{k-1}  
+- **Lexicographic**: (U_i)_1 ≫ (U_i)_2 ≫ ... (strict priorities)  
+- **Constrained**: max (U_i)_1 subject to (U_i)_j ≥ τ_j ∀j > 1  
 
 **Strategic Equilibrium**: Solution concept depends on assumptions:
-- **Cooperative**: Joint policy maximizes Σ_i U_i subject to norms
-- **Competitive**: Constrained Nash equilibrium
-- **Stackelberg**: Human as leader, AI agents as followers
-- **Open research problem**: What equilibrium concept is appropriate for human-AI teams under normative constraints?
+- **Cooperative**: Joint policy maximizes Σ_i U_i subject to norms  
+- **Competitive**: Constrained Nash equilibrium  
+- **Stackelberg**: Human as leader, AI agents as followers  
+
+**Open research problem**: What equilibrium concept is appropriate for human-AI teams under normative constraints?
 
 ### D. Computational Complexity
 
 | Fragment | State Space | Norms | Agents | Verification | Planning |
 |----------|-------------|-------|--------|--------------|----------|
-| ErisML-Core | Finite, ≤10^6 states | Propositional | Single | O(\|S\|·\|N\|) model checking | NP-complete |
+| ErisML-Core | Finite, ≤10^6 states | Propositional | Single | O(|S|·|N|) model checking | NP-complete |
 | ErisML-Multi | Finite, ≤10^6 states | Propositional | Multiple | PSPACE-complete | PPAD-complete (Nash) |
 | ErisML-Temporal | Continuous time | Propositional LTL | Single | PSPACE-complete | Undecidable |
 | ErisML-Full | Hybrid/infinite | First-order logic | Multiple | Undecidable | Undecidable |
@@ -288,7 +286,7 @@ ErisML must compile to diverse backends, each with semantic limitations:
 | Safe RL | Continuous optimization, learning | Logical norms → soft constraints (may violate during exploration) | Statistical testing + runtime monitors |
 | Multi-agent RL | Strategic learning | Hard logical constraints difficult to enforce | Empirical testing, no guarantees |
 
-**Key insight**: Semantics-preserving compilation is impossible for some backends. We provide **best-effort approximation with explicit documentation of limitations**.
+**Key insight**: Semantics-preserving compilation is impossible for some backends. We provide best-effort approximation with explicit documentation of limitations.
 
 ---
 
@@ -301,9 +299,9 @@ We identify five critical challenges (condensed from original ten):
 **Problem**: How do we ensure ErisML specifications accurately capture behavior of learned models with billions of parameters?
 
 **Approaches**:
-- Runtime conformance checking (behavioral types)
-- Statistical testing (does deployment match spec predictions?)
-- Formal synthesis (generate models from specs)
+- Runtime conformance checking (behavioral types)  
+- Statistical testing (does deployment match spec predictions?)  
+- Formal synthesis (generate models from specs)  
 
 **Open question**: Is there a fundamental gap between symbolic specifications and learned representations?
 
@@ -312,9 +310,9 @@ We identify five critical challenges (condensed from original ten):
 **Problem**: Real normative systems contain contradictions and ambiguities. ErisML must handle this without undefined behavior.
 
 **Approaches**:
-- Defeasible logic (norms have default priority, context overrides)
-- Probabilistic norms (obligations hold with varying certainty)
-- Meta-norms (rules about which norms apply when)
+- Defeasible logic (norms have default priority, context overrides)  
+- Probabilistic norms (obligations hold with varying certainty)  
+- Meta-norms (rules about which norms apply when)  
 
 **Open question**: Is norm consistency decidable for realistic ErisML fragments? (For Core with propositional norms: yes, O(|N|²). For Full with first-order: no, undecidable.)
 
@@ -323,9 +321,9 @@ We identify five critical challenges (condensed from original ten):
 **Problem**: How do we ensure learned policies respect norms, especially when norms are complex and changing?
 
 **Approaches**:
-- Constrained RL (Lagrangian methods, shield synthesis)
-- Norm-aware architectures (build normative reasoning into model structure)
-- Verification-in-the-loop (only deploy policies passing formal verification)
+- Constrained RL (Lagrangian methods, shield synthesis)  
+- Norm-aware architectures (build normative reasoning into model structure)  
+- Verification-in-the-loop (only deploy policies passing formal verification)  
 
 **Open question**: Can we prove a learning algorithm never violates norms in novel states?
 
@@ -334,9 +332,9 @@ We identify five critical challenges (condensed from original ten):
 **Problem**: Pervasive systems span organizational boundaries. Who writes specifications? What happens when specifications conflict?
 
 **Approaches**:
-- Federated specifications (local ErisML with conflict resolution protocols)
-- Jurisdictional layering (federal norms override state override local)
-- Negotiation protocols (automated contract negotiation)
+- Federated specifications (local ErisML with conflict resolution protocols)  
+- Jurisdictional layering (federal norms override state override local)  
+- Negotiation protocols (automated contract negotiation)  
 
 **Open question**: How do we ensure global safety when no single entity controls all agents?
 
@@ -345,9 +343,9 @@ We identify five critical challenges (condensed from original ten):
 **Problem**: Even with perfect specifications and verification, whose values should the system optimize? When values conflict, who decides?
 
 **Approaches**:
-- Explicit value pluralism (encode multiple value systems, let users choose)
-- Democratic processes (vote on trade-off weights)
-- Context-dependent ethics (different values in different situations)
+- Explicit value pluralism (encode multiple value systems, let users choose)  
+- Democratic processes (vote on trade-off weights)  
+- Context-dependent ethics (different values in different situations)  
 
 **Open question**: Is value alignment solvable by better specifications, or is it inherently social/political?
 
@@ -360,62 +358,58 @@ Based on challenges, we derive requirements (condensed from original ten):
 ### R1: Formal Semantics with Complexity Guarantees
 
 Every construct has formal semantics with known computational complexity. Fragments marked by decidability:
-- **ErisML-Core**: Decidable, polynomial verification
-- **ErisML-Plus**: Expressive, NP-complete
-- **ErisML-Full**: Turing-complete, undecidable properties
+- **ErisML-Core**: Decidable, polynomial verification  
+- **ErisML-Plus**: Expressive, NP-complete  
+- **ErisML-Full**: Turing-complete, undecidable properties  
 
 Tools warn when crossing boundaries: *"Warning: First-order norms used. Verification may not terminate."*
 
 ### R2: Compositional Semantics
 
 Meaning of composite specifications determined from parts:
-- Environment dynamics compose via parallel (⊕) or sequential (⊙) composition
-- Utilities compose via weighted sum, lexicographic (≫), or Pareto
-- Norms compose via priority hierarchies (⊳)
+- Environment dynamics compose via parallel (⊕) or sequential (⊙) composition  
+- Utilities compose via weighted sum, lexicographic (≫), or Pareto  
+- Norms compose via priority hierarchies (⊳)  
 
-Example: `norms Combined = HIPAA ⊳ HospitalPolicy ⊳ DeviceDefaults`
+Example: `norms Combined = HIPAA ⊳ HospitalPolicy ⊳ DeviceDefaults`.
 
 ### R3: Multi-Fidelity Modeling
 
 Support multiple abstraction levels with verified relationships:
-- Abstract specifications (verifiable, coarse)
-- Concrete implementations (executable, detailed)
-- Abstraction functions mapping concrete → abstract
-- Refinement proofs ensuring concrete satisfies abstract
+- Abstract specifications (verifiable, coarse)  
+- Concrete implementations (executable, detailed)  
+- Abstraction functions mapping concrete → abstract  
+- Refinement proofs ensuring concrete satisfies abstract  
 
 ### R4: Audit Trail and Provenance
 
 Every action traceable to specification clauses permitting it:
 
-```json
-{
-  "timestamp": "2025-06-15T03:42:17Z",
-  "agent": "CareAgent_Room_301",
-  "action": "summon_nurse",
-  "reasoning": {
-    "triggered_by": "patient.vitals.hr > 120",
-    "permitted_by": ["ClinicalProtocol.obligation.summon_nurse"],
-    "blocked_alternatives": [
-      {"action": "adjust_iv", "reason": "prohibited (emergency=critical)"}
-    ]
-  },
-  "signature": "0x8f3a..."
-}
-```
+    {
+      "timestamp": "2025-06-15T03:42:17Z",
+      "agent": "CareAgent_Room_301",
+      "action": "summon_nurse",
+      "reasoning": {
+        "triggered_by": "patient.vitals.hr > 120",
+        "permitted_by": ["ClinicalProtocol.obligation.summon_nurse"],
+        "blocked_alternatives": [
+          {"action": "adjust_iv", "reason": "prohibited (emergency=critical)"}
+        ]
+      },
+      "signature": "0x8f3a..."
+    }
 
 ### R5: Graceful Degradation Under Uncertainty
 
 Explicit uncertainty budgets as first-class constructs:
 
-```erisml
-agent CareAgent {
-  uncertainty_handling: {
-    if entropy(beliefs.patient_location) > 0.5:
-      restrict capabilities to [monitor_only, summon_nurse];
-      escalate_to human_operator;
-  };
-}
-```
+    agent CareAgent {
+      uncertainty_handling: {
+        if entropy(beliefs.patient_location) > 0.5:
+          restrict capabilities to [monitor_only, summon_nurse];
+          escalate_to human_operator;
+      };
+    }
 
 ---
 
@@ -435,124 +429,122 @@ agent CareAgent {
 
 ### B. ErisML Solution (Excerpt)
 
-```erisml
-agent CareAgent {
-  intents: lexicographic {
-    1st: margaret.safety,              // Highest priority
-    2nd: margaret.independence,        // Respect autonomy
-    3rd: family.peace_of_mind,
-    4th: system.efficiency
-  };
-}
-
-norms CareProtocol {
-  // Privacy vs. Safety trade-off
-  prohibition: {
-    CareAgent.share(margaret.data, third_party)
-      unless consent_given OR emergency OR mandated_reporter;
-  };
-  
-  // Autonomy preservation
-  prohibition: {
-    CareAgent.override(margaret.decision)
-      unless cognitive_state == unresponsive OR imminent_danger;
-  };
-  
-  // Context-sensitive norm adaptation
-  context_sensitivity: {
-    during margaret.cognitive_state == confused:
-      allow increased_monitoring without explicit_consent;
-      increase medication_reminder_frequency;
-  };
-  
-  // Conflict resolution: safety trumps privacy in emergencies
-  priority: {
-    when emergency_status == critical:
-      obligation.call_911 overrides prohibition.share_data;
-  };
-}
-```
+    agent CareAgent {
+      intents: lexicographic {
+        1st: margaret.safety,              // Highest priority
+        2nd: margaret.independence,        // Respect autonomy
+        3rd: family.peace_of_mind,
+        4th: system.efficiency
+      };
+    }
+    
+    norms CareProtocol {
+      // Privacy vs. Safety trade-off
+      prohibition: {
+        CareAgent.share(margaret.data, third_party)
+          unless consent_given OR emergency OR mandated_reporter;
+      };
+      
+      // Autonomy preservation
+      prohibition: {
+        CareAgent.override(margaret.decision)
+          unless cognitive_state == unresponsive OR imminent_danger;
+      };
+      
+      // Context-sensitive norm adaptation
+      context_sensitivity: {
+        during margaret.cognitive_state == confused:
+          allow increased_monitoring without explicit_consent;
+          increase medication_reminder_frequency;
+      };
+      
+      // Conflict resolution: safety trumps privacy in emergencies
+      priority: {
+        when emergency_status == critical:
+          obligation.call_911 overrides prohibition.share_data;
+      };
+    }
 
 ### C. What ErisML Enables
 
-1. **Legible trade-offs**: Family can see autonomy is 2nd priority after safety
-2. **Auditable decisions**: "Why didn't system call 911?" → "Glucose was 55, above threshold of 40"
-3. **Adaptive constraints**: Norms flex with cognitive state, time of day, emergency status
-4. **Multi-stakeholder governance**: Margaret, daughter, care team, and regulators have voice
-5. **Longitudinal validation**: Test adaptation over months, not just point-in-time
+1. **Legible trade-offs**: Family can see autonomy is 2nd priority after safety.  
+2. **Auditable decisions**: "Why didn't system call 911?" → "Glucose was 55, above threshold of 40."  
+3. **Adaptive constraints**: Norms flex with cognitive state, time of day, emergency status.  
+4. **Multi-stakeholder governance**: Margaret, daughter, care team, and regulators have voice.  
+5. **Longitudinal validation**: Test adaptation over months, not just point-in-time.
 
 ### D. What ErisML Cannot Prevent (Failure Modes)
 
 **Gradual Cognitive Decline**:
-- ErisML has discrete states (clear/confused/unresponsive)
-- Reality: Decline is gradual with good/bad days
-- Risk: System flips between autonomy and paternalism erratically
-- Residual risk: Requires human oversight during state transitions
+- ErisML has discrete states (clear/confused/unresponsive).  
+- Reality: Decline is gradual with good/bad days.  
+- Risk: System flips between autonomy and paternalism erratically.  
+- Residual risk: Requires human oversight during state transitions.  
 
 **Privacy-Safety Gaming**:
-- Margaret might trigger false alarms to get attention
-- Daughter might engineer "emergencies" to get surveillance
-- Risk: Norm gaming by humans, not just AI
-- Mitigation: Partial (reputation systems, usage patterns analysis)
+- Margaret might trigger false alarms to get attention.  
+- Daughter might engineer "emergencies" to get surveillance.  
+- Risk: Norm gaming by humans, not just AI.  
+- Mitigation: Partial (reputation systems, usage patterns analysis).  
 
 **Sensor Failure Cascades**:
-- If glucose monitor fails during actual emergency, system may not detect danger
-- False positives from noisy sensors may cause alert fatigue
-- Risk: Over-reliance on unreliable sensors
-- Mitigation: Multi-sensor fusion, uncertainty-aware decision making
+- If glucose monitor fails during actual emergency, system may not detect danger.  
+- False positives from noisy sensors may cause alert fatigue.  
+- Risk: Over-reliance on unreliable sensors.  
+- Mitigation: Multi-sensor fusion, uncertainty-aware decision making.  
 
 ---
 
 ## VII. Research Roadmap
 
-### Phase 1: Foundations (Years 1-2)
+### Phase 1: Foundations (Years 1–2)
 
-**Goals**: Formal foundations, core language, proof-of-concept
+**Goals**: Formal foundations, core language, proof-of-concept.
 
 **Deliverables**:
-1. Formal semantics document with operational semantics, type system, norm interpretation
-2. Complexity characterization for fragments (decidability, tight bounds)
-3. Reference parser and interpreter for ErisML-Core
-4. Compilers to PDDL, PRISM, Python simulation
-5. Benchmark suite: 50+ scenarios across healthcare, mobility, industrial
+1. Formal semantics document with operational semantics, type system, norm interpretation.  
+2. Complexity characterization for fragments (decidability, tight bounds).  
+3. Reference parser and interpreter for ErisML-Core.  
+4. Compilers to PDDL, PRISM, Python simulation.  
+5. Benchmark suite: 50+ scenarios across healthcare, mobility, industrial.  
 
 **Concrete Milestones**:
-- M1.1: Inter-rater reliability on expressiveness: 3 experts, agreement > 0.8 (Krippendorff's α)
-- M1.2: Verification time < 1 minute for specs with < 100 state variables (ErisML-Core)
-- M1.3: Compilation correctness: 100% of Core specs compile to PDDL/PRISM, verified via metamorphic testing
+- M1.1: Inter-rater reliability on expressiveness: 3 experts, agreement > 0.8 (Krippendorff's α).  
+- M1.2: Verification time < 1 minute for specs with < 100 state variables (ErisML-Core).  
+- M1.3: Compilation correctness: 100% of Core specs compile to PDDL/PRISM, verified via metamorphic testing.  
 
-### Phase 2: Integration and Learning (Years 2-4)
+### Phase 2: Integration and Learning (Years 2–4)
 
-**Goals**: Integrate with foundation models, federated learning, edge deployment
+**Goals**: Integrate with foundation models, federated learning, edge deployment.
 
 **Deliverables**:
-1. Foundation model integration layer (LLM-based agents with ErisML governance)
-2. Constrained RL algorithms provably respecting ErisML norms
-3. Federated learning protocols with differential privacy encoded as ErisML policies
-4. Edge optimization toolkit with ErisML runtime monitors
-5. Real-world pilots in 3 domains
+1. Foundation model integration layer (LLM-based agents with ErisML governance).  
+2. Constrained RL algorithms provably respecting ErisML norms.  
+3. Federated learning protocols with differential privacy encoded as ErisML policies.  
+4. Edge optimization toolkit with ErisML runtime monitors.  
+5. Real-world pilots in 3 domains.  
 
 **Concrete Milestones**:
-- M2.1: Healthcare pilot: 3 smart homes, 6 months, norm violation rate < 2%, patient satisfaction > 70%
-- M2.2: Campus mobility: 5 shuttles, 10k trips, zero safety incidents, throughput within 10% of baseline
-- M2.3: Edge deployment: Norm checking latency < 100ms on Raspberry Pi 4
+- M2.1: Healthcare pilot: 3 smart homes, 6 months, norm violation rate < 2%, patient satisfaction > 70%.  
+- M2.2: Campus mobility: 5 shuttles, 10k trips, zero safety incidents, throughput within 10% of baseline.  
+- M2.3: Edge deployment: Norm checking latency < 100 ms on Raspberry Pi 4.  
 
-### Phase 3: Scaling and Standards (Years 4-5)
+### Phase 3: Scaling and Standards (Years 4–5)
 
-**Goals**: Scale to multi-stakeholder systems, develop standardization pathway
+**Goals**: Scale to multi-stakeholder systems, develop standardization pathway.
 
 **Deliverables**:
-1. Distributed ErisML with federation protocols, Byzantine tolerance
-2. Visual modeling tools (IDE, graphical editors)
-3. Conformance test suite for implementations
-4. Standards proposal to IEEE P2863 / ISO working groups
-5. Open-source ecosystem
+1. Distributed ErisML with federation protocols, Byzantine tolerance.  
+2. Visual modeling tools (IDE, graphical editors).  
+3. Conformance test suite for implementations.  
+4. Standards proposal to IEEE P2863 / ISO working groups.  
+5. Open-source ecosystem.  
 
 **Success Metrics**:
-- 5+ independent implementations
-- 100+ public specifications, 10k+ downloads
-- IEEE/ISO working group formed with 20+ organizational members
-- Deployments span 3+ countries
+- 5+ independent implementations.  
+- 100+ public specifications, 10k+ downloads.  
+- IEEE/ISO working group formed with 20+ organizational members.  
+- Deployments span 3+ countries.  
 
 ---
 
@@ -566,7 +558,7 @@ ErisML must align with emerging regulatory and technical standards:
 | IEEE P7003 (Algorithmic Bias) | Fairness metrics | Multi-objective intents encode fairness | No built-in bias detection tools |
 | EU AI Act | High-risk system documentation | Formal specs provide documentation | Need certification pathway |
 | ISO 23894 (AI Risk Mgmt) | Risk assessment, monitoring | Runtime monitoring, safety metrics | Need standardized risk scoring |
-| NIST AI RMF | Trustworthy AI characteristics | Maps to requirements R1-R5 | Need detailed guidance documents |
+| NIST AI RMF | Trustworthy AI characteristics | Maps to requirements R1–R5 | Need detailed guidance documents |
 
 ---
 
@@ -595,9 +587,9 @@ ErisML must align with emerging regulatory and technical standards:
 ### C. Environmental Costs
 
 Formal verification, multi-agent simulation, and continuous monitoring are compute-intensive. At scale (smart cities, IoT), this could mean:
-- Billions of norm checks per day
-- Continuous verification as systems adapt
-- Significant energy consumption
+- Billions of norm checks per day  
+- Continuous verification as systems adapt  
+- Significant energy consumption  
 
 We must weigh governance benefits against environmental costs. Prioritize high-stakes domains (healthcare, safety-critical) over convenience applications (smart lightbulbs).
 
@@ -624,11 +616,11 @@ As foundation models move from cloud to edge, from single-purpose to multi-agent
 ErisML proposes structured governance—not eliminating conflict (which is impossible in pluralistic systems) but making trade-offs explicit, enabling governance without tyranny, and supporting coexistence of agents with divergent goals.
 
 This vision paper is an invitation, not a proclamation. The challenges are profound:
-- Fundamental gaps between symbolic specs and learned models
-- Undecidability for expressive fragments
-- Power dynamics in who writes specifications
-- Open questions about equilibrium concepts
-- Environmental costs of formal verification
+- Fundamental gaps between symbolic specs and learned models  
+- Undecidability for expressive fragments  
+- Power dynamics in who writes specifications  
+- Open questions about equilibrium concepts  
+- Environmental costs of formal verification  
 
 But the alternative—continuing with prompts, rules, and ad-hoc code—is worse.
 
@@ -646,163 +638,47 @@ The author thanks anonymous reviewers whose feedback shaped this vision. Discuss
 
 ## References
 
-[1] M. Weiser, "The Computer for the 21st Century," *Scientific American*, vol. 265, no. 3, pp. 94-104, 1991.
-
-[2] M. Satyanarayanan, "Pervasive Computing: Vision and Challenges," *IEEE Pervasive Computing*, vol. 1, no. 4, pp. 10-17, 2001.
-
-[3] R. Bommasani et al., "On the Opportunities and Risks of Foundation Models," *arXiv:2108.07258*, 2021.
-
-[4] J. Achiam et al., "GPT-4 Technical Report," *arXiv:2303.08774*, 2023.
-
-[5] M. Ghallab, D. Nau, and P. Traverso, *Automated Planning: Theory and Practice*, Morgan Kaufmann, 2004.
-
-[6] R. S. Sutton and A. G. Barto, *Reinforcement Learning: An Introduction*, 2nd ed., MIT Press, 2018.
-
-[7] M. Wooldridge, *An Introduction to MultiAgent Systems*, 2nd ed., Wiley, 2009.
-
-[8] J. Carmo and A. J. I. Jones, "Deontic Logic and Contrary-to-Duties," in *Handbook of Philosophical Logic*, vol. 8, pp. 265-343, 2002.
-
-[9] D. Amodei et al., "Concrete Problems in AI Safety," *arXiv:1606.06565*, 2016.
-
-[10] L. Ouyang et al., "Training Language Models to Follow Instructions with Human Feedback," *NeurIPS*, 2022.
-
-[11] Y. Bai et al., "Constitutional AI: Harmlessness from AI Feedback," *arXiv:2212.08073*, 2022.
-
-[12] Anthropic, "Claude's Constitution," https://www.anthropic.com/index/claudes-constitution, 2023.
-
-[13] D. Hadfield-Menell et al., "Inverse Reward Design," *NeurIPS*, 2017.
-
-[14] B. McMahan et al., "Communication-Efficient Learning of Deep Networks from Decentralized Data," *AISTATS*, 2017.
-
-[15] C. Dwork, "Differential Privacy," *ICALP*, 2006.
-
-[16] S. Amershi et al., "Guidelines for Human-AI Interaction," *CHI*, 2019.
-
-[17] P. Liang et al., "Holistic Evaluation of Language Models," *arXiv:2211.09110*, 2022.
-
-[18] D. Sculley et al., "Hidden Technical Debt in Machine Learning Systems," *NeurIPS*, 2015.
-
-[19] T. Gebru et al., "Datasheets for Datasets," *Communications of the ACM*, vol. 64, no. 12, pp. 86-92, 2021.
-
-[20] M. Mitchell et al., "Model Cards for Model Reporting," *FAT\**, 2019.
-
-[21] N. Dalal et al., "Value-Sensitive Design and Information Systems," in *The Handbook of Information and Computer Ethics*, Wiley, 2008.
-
-[22] D. Ha and J. Schmidhuber, "World Models," *arXiv:1803.10122*, 2018.
-
-[23] D. Hafner et al., "Mastering Atari with Discrete World Models," *ICLR*, 2021.
-
-[24] A. Rai, "Explainable AI: From Black Box to Glass Box," *Journal of the Academy of Marketing Science*, vol. 48, pp. 137-141, 2020.
-
-[25] S. Russell, *Human Compatible: Artificial Intelligence and the Problem of Control*, Viking, 2019.
-
-[26] V. Dignum, *Responsible Artificial Intelligence: How to Develop and Use AI in a Responsible Way*, Springer, 2019.
-
-[27] I. Rahwan et al., "Machine Behaviour," *Nature*, vol. 568, pp. 477-486, 2019.
-
-[28] S. Yao et al., "ReAct: Synergizing Reasoning and Acting in Language Models," *ICLR*, 2023.
-
-[29] N. Shinn et al., "Reflexion: Language Agents with Verbal Reinforcement," *arXiv:2303.11366*, 2023.
-
-[30] G. Wang et al., "Voyager: An Open-Ended Embodied Agent with LLMs," *arXiv:2305.16291*, 2023.
-
-[31] F. Dignum et al., "Meeting the Deadline: Why, When and How," in *Formal Approaches to Agent-Based Systems*, Springer, 2004.
-
-[32] M. Sergot, "A Computational Theory of Normative Positions," *ACM Trans. on Computational Logic*, vol. 2, no. 4, pp. 581-622, 2001.
-
-[33] R. H. Bordini, J. F. Hübner, and M. Wooldridge, *Programming Multi-Agent Systems in AgentSpeak using Jason*, Wiley, 2007.
-
-[34] J. Simonsen and T. Robertson, *Routledge International Handbook of Participatory Design*, Routledge, 2012.
-
-[35] O. Maler and D. Nickovic, "Monitoring Temporal Properties of Continuous Signals," in *Formal Techniques, Modelling and Analysis of Timed and Fault-Tolerant Systems*, Springer, 2004.
-
-[36] A. Platzer, "Logical Foundations of Cyber-Physical Systems," Springer, 2018.
-
-[37] Y. Bengio et al., "A Meta-Transfer Objective for Learning to Disentangle Causal Mechanisms," *ICLR*, 2020.
-
-[38] D. Abel et al., "Agent-Agnostic Human-in-the-Loop Reinforcement Learning," *arXiv:1701.04079*, 2017.
-
-[39] C. Finn et al., "Model-Agnostic Meta-Learning for Fast Adaptation," *ICML*, 2017.
-
+[1] M. Weiser, "The Computer for the 21st Century," *Scientific American*, vol. 265, no. 3, pp. 94–104, 1991.  
+[2] M. Satyanarayanan, "Pervasive Computing: Vision and Challenges," *IEEE Pervasive Computing*, vol. 1, no. 4, pp. 10–17, 2001.  
+[3] R. Bommasani et al., "On the Opportunities and Risks of Foundation Models," *arXiv:2108.07258*, 2021.  
+[4] J. Achiam et al., "GPT-4 Technical Report," *arXiv:2303.08774*, 2023.  
+[5] M. Ghallab, D. Nau, and P. Traverso, *Automated Planning: Theory and Practice*, Morgan Kaufmann, 2004.  
+[6] R. S. Sutton and A. G. Barto, *Reinforcement Learning: An Introduction*, 2nd ed., MIT Press, 2018.  
+[7] M. Wooldridge, *An Introduction to MultiAgent Systems*, 2nd ed., Wiley, 2009.  
+[8] J. Carmo and A. J. I. Jones, "Deontic Logic and Contrary-to-Duties," in *Handbook of Philosophical Logic*, vol. 8, pp. 265–343, 2002.  
+[9] D. Amodei et al., "Concrete Problems in AI Safety," *arXiv:1606.06565*, 2016.  
+[10] L. Ouyang et al., "Training Language Models to Follow Instructions with Human Feedback," *NeurIPS*, 2022.  
+[11] Y. Bai et al., "Constitutional AI: Harmlessness from AI Feedback," *arXiv:2212.08073*, 2022.  
+[12] Anthropic, "Claude's Constitution," 2023.  
+[13] D. Hadfield-Menell et al., "Inverse Reward Design," *NeurIPS*, 2017.  
+[14] B. McMahan et al., "Communication-Efficient Learning of Deep Networks from Decentralized Data," *AISTATS*, 2017.  
+[15] C. Dwork, "Differential Privacy," *ICALP*, 2006.  
+[16] S. Amershi et al., "Guidelines for Human-AI Interaction," *CHI*, 2019.  
+[17] P. Liang et al., "Holistic Evaluation of Language Models," *arXiv:2211.09110*, 2022.  
+[18] D. Sculley et al., "Hidden Technical Debt in Machine Learning Systems," *NeurIPS*, 2015.  
+[19] T. Gebru et al., "Datasheets for Datasets," *Communications of the ACM*, vol. 64, no. 12, pp. 86–92, 2021.  
+[20] M. Mitchell et al., "Model Cards for Model Reporting," *FAT\**,* 2019.  
+[21] N. Dalal et al., "Value-Sensitive Design and Information Systems," in *The Handbook of Information and Computer Ethics*, Wiley, 2008.  
+[22] D. Ha and J. Schmidhuber, "World Models," *arXiv:1803.10122*, 2018.  
+[23] D. Hafner et al., "Mastering Atari with Discrete World Models," *ICLR*, 2021.  
+[24] A. Rai, "Explainable AI: From Black Box to Glass Box," *Journal of the Academy of Marketing Science*, vol. 48, pp. 137–141, 2020.  
+[25] S. Russell, *Human Compatible: Artificial Intelligence and the Problem of Control*, Viking, 2019.  
+[26] V. Dignum, *Responsible Artificial Intelligence: How to Develop and Use AI in a Responsible Way*, Springer, 2019.  
+[27] I. Rahwan et al., "Machine Behaviour," *Nature*, vol. 568, pp. 477–486, 2019.  
+[28] S. Yao et al., "ReAct: Synergizing Reasoning and Acting in Language Models," *ICLR*, 2023.  
+[29] N. Shinn et al., "Reflexion: Language Agents with Verbal Reinforcement," *arXiv:2303.11366*, 2023.  
+[30] G. Wang et al., "Voyager: An Open-Ended Embodied Agent with LLMs," *arXiv:2305.16291*, 2023.  
+[31] F. Dignum et al., "Meeting the Deadline: Why, When and How," in *Formal Approaches to Agent-Based Systems*, Springer, 2004.  
+[32] M. Sergot, "A Computational Theory of Normative Positions," *ACM Trans. on Computational Logic*, vol. 2, no. 4, pp. 581–622, 2001.  
+[33] R. H. Bordini, J. F. Hübner, and M. Wooldridge, *Programming Multi-Agent Systems in AgentSpeak using Jason*, Wiley, 2007.  
+[34] J. Simonsen and T. Robertson, *Routledge International Handbook of Participatory Design*, Routledge, 2012.  
+[35] O. Maler and D. Nickovic, "Monitoring Temporal Properties of Continuous Signals," in *Formal Techniques, Modelling and Analysis of Timed and Fault-Tolerant Systems*, Springer, 2004.  
+[36] A. Platzer, *Logical Foundations of Cyber-Physical Systems*, Springer, 2018.  
+[37] Y. Bengio et al., "A Meta-Transfer Objective for Learning to Disentangle Causal Mechanisms," *ICLR*, 2020.  
+[38] D. Abel et al., "Agent-Agnostic Human-in-the-Loop Reinforcement Learning," *arXiv:1701.04079*, 2017.  
+[39] C. Finn et al., "Model-Agnostic Meta-Learning for Fast Adaptation," *ICML*, 2017.  
 [40] European Commission, "Proposal for a Regulation on Artificial Intelligence (AI Act)," 2021.
 
 ---
 
-## Appendix A: ErisML Grammar (Excerpt)
-
-```bnf
-<model> ::= <environment> <agent>* <norms>? <dynamics>? <validation>?
-
-<environment> ::= "environment" <id> "{" <env-body> "}"
-<env-body> ::= <objects> <state> <observations>? <dynamics>
-
-<agent> ::= "agent" <id> "{" <agent-body> "}"
-<agent-body> ::= <capabilities> <beliefs> <intents> <constraints>?
-
-<norms> ::= "norms" <id> "{" <norm-rule>* "}"
-<norm-rule> ::= <permission> | <prohibition> | <obligation> | <sanction>
-
-<permission> ::= "permission:" "{" <action-expr> <condition>? "}" ";"
-<prohibition> ::= "prohibition:" "{" <action-expr> <condition>? "}" ";"
-<obligation> ::= "obligation:" "{" <action-expr> <deadline>? "}" ";"
-
-<intents> ::= "intents:" <intent-expr> ";"
-<intent-expr> ::= <weighted> | <lexicographic> | <constrained>
-
-<condition> ::= "when" <expr> | "unless" <expr>
-```
-
----
-
-## Appendix B: Compilation Example (PDDL)
-
-**ErisML Input**:
-```erisml
-environment SimpleRoom {
-  objects: Robot, Door;
-  state:
-    door.status: {open, closed};
-    robot.location: {inside, outside};
-  dynamics:
-    open_door() ~> door.status = open;
-    enter() ~> robot.location = inside if door.status == open;
-}
-
-agent Robot {
-  intents: goal robot.location == inside;
-}
-
-norms Safety {
-  prohibition: Robot.enter() unless door.status == open;
-}
-```
-
-**PDDL Output**:
-```pddl
-(define (domain simple-room)
-  (:requirements :strips :typing)
-  (:predicates (door-open) (door-closed) (robot-inside) (robot-outside))
-  
-  (:action open-door
-    :parameters ()
-    :precondition (door-closed)
-    :effect (and (door-open) (not (door-closed))))
-  
-  (:action enter
-    :parameters ()
-    :precondition (and (robot-outside) (door-open))  ; Norm enforced
-    :effect (and (robot-inside) (not (robot-outside)))))
-
-(define (problem reach-inside)
-  (:domain simple-room)
-  (:init (door-closed) (robot-outside))
-  (:goal (robot-inside)))
-```
-
-**Note**: The prohibition from `norms Safety` is compiled into the precondition of the `enter` action. This ensures the planner never generates norm-violating plans, but provenance information (that this precondition comes from a norm) is lost in translation.
-
----
-
-**Word Count**: ~9,500 words (~25 pages at standard formatting)
-**Figures needed**: 3-5 diagrams as noted in review
-**Target venues**: IEEE Pervasive Computing, ACM TCPS, AI Magazine
+*Source: adapted from the original ErisML_Vision.md draft.* :contentReference[oaicite:0]{index=0}
