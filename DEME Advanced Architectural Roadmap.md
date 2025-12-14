@@ -30,22 +30,32 @@ This roadmap outlines the steps required to transition the DEME architecture fro
 | **C-5** | **Trustless Execution** | Research and select a secure sandboxed execution environment (e.g., WebAssembly, secure enclave technology) to safely run third-party EMs distributed via the DHT. | ☐ To Do |
 | **C-6** | **Oracle Solution** | Investigate a trusted data oracle mechanism to ensure the integrity of the off-chain data (e.g., **EthicalFacts**) used as input for the on-chain-verified EMs. | ☐ To Do |
 
-## 4. Governance and Enforcement Agents (New)
-
-This section focuses on introducing active components to enforce and audit the ethical constraints defined by the DEME core.
+## 4. Governance and Enforcement Agents
 
 | Task ID | Component | Description | Status |
 | :--- | :--- | :--- | :--- |
-| **E-1** | **Enforcement Agent Design** | Design a dedicated **Ethics Enforcement Agent** whose sole role is to monitor the actions of governed agents, compare actions against the required `DecisionOutcome` (audit log), and intervene if divergence is detected. | ☐ To Do |
-| **E-2** | **Intervention Protocol** | Define standardized intervention mechanisms for the Enforcement Agent (e.g., non-compliance logging, issuing a system-wide pause/throttle command, or overriding the agent's next action queue). | ☐ To Do |
-| **E-3** | **Conflict Resolution Module** | Develop a dedicated module within the Enforcement Agent to mediate ethical conflicts between two or more governed agents (e.g., when two agents' permissible actions conflict with the *collective* good). This module would query DEME with a new aggregated profile derived from all involved agents. | ☐ To Do |
+| **E-1** | **Enforcement Agent Design** | Design a dedicated **Ethics Enforcement Agent (EA)** whose sole role is to monitor the actions of governed agents, compare actions against the required `DecisionOutcome`, and intervene if divergence is detected. | ☐ To Do |
+| **E-2** | **Intervention Protocol** | Define standardized intervention mechanisms for the EA (e.g., non-compliance logging, issuing a system-wide pause/throttle command, or overriding the agent's next action queue). | ☐ To Do |
+| **E-3** | **Conflict Resolution Module** | Develop a dedicated module within the EA to mediate ethical conflicts between two or more governed agents (e.g., when two agents' permissible actions conflict with the *collective* good). | ☐ To Do |
 | **E-4** | **Real-Time Auditing** | Integrate the enforcement system with the **Audit Trail** logic, ensuring that every executed action is cryptographically signed and logged with its corresponding **EthicalFacts** and `DecisionOutcome`. | ☐ To Do |
 | **E-5** | **Metrics and Reporting Agent** | Create a dashboard agent that aggregates metrics from the `DecisionOutcome` logs, tracking compliance rates, frequency of Hard Vetoes, average Epistemic Penalty, and profile effectiveness over time. | ☐ To Do |
 
-## 5. Stakeholder Engagement and Tooling (New)
+## 5. Stakeholder Engagement and Tooling
 
 | Task ID | Component | Description | Status |
 | :--- | :--- | :--- | :--- |
 | **S-1** | **Governance Drift Detector** | Develop tooling to detect when changes to EMs or underlying data models cause an unintended shift in the preference ranking of options by a specific `DEMEProfileV03`. | ☐ To Do |
 | **S-2** | **Formal Verification Tool** | Create a tool to formally verify critical sections of EM logic (especially Hard Veto rules) against specified ethical invariants (e.g., "The system shall never prioritize profit over a life-critical safety measure"). | ☐ To Do |
 | **S-3** | **Profile-as-Code** | Enhance the **Ethical Dialogue CLI** to allow users to generate, test, and manage `DEMEProfileV03` configurations entirely through a version-controlled, declarative interface. | ☐ To Do |
+
+## 6. Self-Auditing and Security (Internal Affairs)
+
+This new section implements the necessary checks and balances to secure the governance layer against attack and compromise.
+
+| Task ID | Component | Description | Status |
+| :--- | :--- | :--- | :--- |
+| **SA-1** | **SAIDS Agent Design** | Design the **Self-Auditing and Intrusion Detection System (SAIDS) Agent** as an isolated "Internal Affairs" agent dedicated to monitoring the integrity and behavior of the Enforcement Agent (EA). | ☐ To Do |
+| **SA-2** | **Reward Isolation** | Implement a "Reward Firewall" to cryptographically isolate the EA from any external reward or incentive structure that could be manipulated by governed agents. | ☐ To Do |
+| **SA-3** | **Behavioral Drift Detection** | Develop statistical models within the SAIDS Agent to detect anomalous behavior (e.g., intervention pattern changes, audit log omissions) by the EA, signaling a potential bribe or compromise. | ☐ To Do |
+| **SA-4** | **ZKP/Verifiable Audit** | Implement Zero-Knowledge Proofs or similar cryptographic primitives to allow the EA to prove the veracity of its enforcement decisions to the SAIDS Agent and the blockchain without revealing the full decision logic. | ☐ To Do |
+| **SA-5** | **Quarantine Protocol** | Define the SAIDS Agent's ultimate power: an immediate, unchangeable, and irreversible protocol to isolate a compromised Enforcement Agent and notify the Human-in-the-Loop (HIL) authority. | ☐ To Do |
